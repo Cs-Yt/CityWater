@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <style type="text/css">
+
+        #Content-UP_Left{
+            height:300px;
+            width:1000px;
+            margin:0px;/*设置元素跟其他元素的距离为20像素*/
+            float:center;/*设置浮动，实现多列效果，div+Css布局中很重要的*/
+            /*background:#90C;*/
+        }
+        #Content-UP_Right{
+            height:300px;
+            width:600px;
+            margin:0px;/*设置元素跟其他元素的距离为20像素*/
+            float:center;/*设置浮动，实现多列效果，div+Css布局中很重要的*/
+            /*background:#90C;*/
+        }
+    </style>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js">
+    </script>
+</head>
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="Content-UP_Left"></div>
+    <div id="Content-UP_Right"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+    <script type="text/javascript">
+        // 路径配置
+        require.config({
+            paths: {
+                echarts: 'http://echarts.baidu.com/build/dist'
+            }
+        });
+        
+        // 使用
+        require(
+            [
+                'echarts',
+                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
+            ], 
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart0 = ec.init(document.getElementById('Content-UP_Left')); 
+                var myChart1 = ec.init(document.getElementById('Content-UP_Right')); 
+                
+                var option_temp = {
+                    title : {
+                        text: '温度传感器数据',
+                        subtext: '实时显示'
+                    },
+                    tooltip : {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: ['温度'],
+                        orient:'vertical'
+                    },
+                    toolbox: {
+                        show : false,
+                        feature : {
+                            mark : {show: true},
+                            dataView : {show: true, readOnly: false},
+                            magicType : {show: true, type: 'line'},
+                            restore : {show: true},
+                            saveAsImage : {show: true}
+                        }
+                    },
+                    dataZoom : {
+                        show : false,
+                        start : 0,
+                        end : 100,
+                        showDetail : true,
+                        realtime : false
+                    },
+                    xAxis : [
+                        {
+                            type : 'category',
+                            boundaryGap : false,
+                            data : (function (){
+                                var now = new Date();
+                                var res = [];
+                                var len = 10;
+                                while (len--) {
+                                    res.unshift(now.toLocaleTimeString().replace(/^\D*/,''));
+                                    now = new Date(now - 2000);
+                                }
+                                return res;
+                            })()
+                    
+                        }
+                    ],
+                    yAxis : [
+                        {
+                            type : 'value',
+                            scale: true,
+                            name : '测试数据',
+                            boundaryGap: [0.2, 0.2]
+                        }
+                    ],
+                    series : [  
+                        {
+                            name:'温度',
+                            type:'line',
+                            smooth:'true',
+                            data:(function (){
+                                var res = [];
+                                var i = 10;
+                                while(i--){
+                                    res.push(0);
+                                }
+                                return res;
+                            })()
+                            /*data:(function (){
+                                var res = [];
+                                var len = 10;
+                                $.get("http://techo1987.com/rttemp/{{ mac }}/10", function(data, status){
+                                    console.log(data.datalist);
+                                    console.log(data.datalist[0]);
+                                    for (var i=0; i<data.datalist.length; ++i){
+                                        res.push(data.datalist[i].value);
+                                        console.log(data.datalist[i].value);
+                                    }
+                                    myChart0.setOption(option_temp);
+                                    console.log("res:" + res);
+                                    return res; 
+                                }); 
+                            })()*/
+                        }
+                    ]
+                };
+                var option_voltage = {
+
+                    title : {
+                        text: '电压数据',
+                        subtext: '实时显示'
+                    },
+                    tooltip : {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: ['电压'],
+                        orient:'vertical'
+                    },
+                    toolbox: {
+                        show : false,
+                        feature : {
+                            mark : {show: true},
+                            dataView : {show: true, readOnly: false},
+                            magicType : {show: true, type: 'line'},
+                            restore : {show: true},
+                            saveAsImage : {show: true}
+                        }
+                    },
+                    dataZoom : {
+                        show : false,
+                        start : 0,
+                        end : 100,
+                        showDetail : true,
+                        realtime : false
+                    },
+                    xAxis : [
+                        {
+                            type : 'category',
+                            boundaryGap : false,
+                            data : (function (){
+                                var now = new Date();
+                                var res = [];
+                                var len = 10;
+                                while (len--) {
+                                    res.unshift(now.toLocaleTimeString().replace(/^\D*/,''));
+                                    now = new Date(now - 2000);
+                                }
+                                return res;
+                            })()
+                    
+                        }
+                    ],
+                    yAxis : [
+                        {
+                            type : 'value',
+                            scale: true,
+                            name : '测试数据',
+                            boundaryGap: [0.2, 0.2]
+                        }
+                    ],
+                    series : [  
+                        {
+                            name:'电压',
+                            type:'line',
+                            smooth:'true',
+                            itemStyle: {
+                                normal: {
+                                    color:'#999900'
+                                }
+                                // emphasis: {
+                                    
+                                // }
+                            },
+                            data:(function (){
+                                var res = [];
+                                var len = 10;
+                                while (len--) {
+                                    res.push((Math.random() + 5).toFixed(1) - 0);
+                                }
+                                return res;
+                            })()
+                        }
+                    ]
+                };
+
+                $(document).ready(function(){
+                    //$("button").click(function(){
+                    console.log('click');
+                    //alert("I am click");
+                        window.setInterval(function(){
+                            $.get("http://techo1987.com/rttemp/{{ mac }}/1/", function(data, status){
+                                     //alert("Data: " + data + "\nStatus: " + status);
+                                    var len = option_temp.xAxis[0].data.length;
+                                    if(option_temp.xAxis[0].data[len-1] !=  data.datalist[0].time) {
+                                        option_temp.series[0].data = data.datalist[0].value;
+                                        var str = data.datalist[0].time;
+                                        str = str.replace(/-/g,"/");
+                                        var date = new Date(str);
+                                        option_temp.xAxis[0].data[9] = date.toLocaleTimeString().replace(/^\D*/,'');
+                                        myChart0.setOption(option_temp);
+                                    }
+/*
+                                    if(option_temp.xAxis[0].data[len-1] !=  data.time) {
+                                         option_temp.series[0].data.push(data.value);
+                                         option_temp.xAxis[0].data.push(data.time);
+                                         myChart0.setOption(option_temp);
+                                    } else {
+                                         console.log("not a new data");
+                                         console.log("xAxistime:" + option_temp.xAxis[0].data[len-1]);
+                                         console.log("time:" + data.time);
+                                    } 
+*/
+                           });
+
+                            $.get("http://techo1987.com/rtvdd/{{ mac }}", function(data, status){
+                                     //alert("Data: " + data + "\nStatus: " + status);
+                                    var len = option_voltage.xAxis[0].data.length;
+                                    if(option_voltage.xAxis[0].data[len-1] !=  data.time) {
+                                         option_voltage.series[0].data.push(data.value);
+                                         option_voltage.xAxis[0].data.push(data.time);
+                                         myChart1.setOption(option_voltage);
+                                    } else {
+                                         console.log("not a new data");
+                                         console.log("xAxistime:" + option_voltage.xAxis[0].data[len-1]);
+                                         console.log("time:" + data.time);
+                                    } 
+                            });
+                        }, 30*100000);
+
+                    console.log('finnish');
+                    //alert("I am out");
+                //  });
+
+                });
+                
+                //myChart.setOption(option);
+                // 为echarts对象加载数据
+                window.setTimeout(function (){
+                $.get("http://techo1987.com/rttemp/{{ mac }}/10", function(data, status){
+                                    //console.log(data.datalist);
+                                    //console.log(data.datalist[0]);
+                                    
+                                    for (var i=0; i<data.datalist.length; ++i){
+                                        option_temp.series[0].data[10-i-1] = data.datalist[i].value;
+                                        var str = data.datalist[i].time;
+                                        str = str.replace(/-/g,"/");
+                                        var date = new Date(str);
+                                        option_temp.xAxis[0].data[10-i-1] = date.toLocaleTimeString().replace(/^\D*/,'');
+                                        //console.log(option_temp.series[0].data);
+                                    }
+                                    myChart0.setOption(option_temp); 
+                                }); 
+
+                }, 10);
+
+                window.setInterval(function (){
+                $.get("http://techo1987.com/rttemp/{{ mac }}/10", function(data, status){
+                                    //console.log(data.datalist);
+                                    //console.log(data.datalist[0]);
+                                    
+                                    var str = data.datalist[1].time;
+                                    str = str.replace(/-/g,"/");
+                                    var date = new Date(str);
+                                    ddata =  date.toLocaleTimeString().replace(/^\D*/,'');
+                                    if(option_temp.xAxis[0].data[9] == ddata){
+                                        console.log("use adddata");
+                                        //console.log(data.datalist[0].value);
+                                        //console.log(data.datalist[0].time);
+                                        myChart0.addData(
+                                                0,        // 系列索引
+                                                ddata, // 新增数据
+                                                false,     // 新增数据是否从队列头部插入
+                                                true       // 是否增加队列长度，false则自定删除原有数据，队头插入删队尾，队尾插入删队头
+                                        );
+                                    }
+                                    else{
+                                        console.log("dont use adddata");
+                                        for (var i=0; i<data.datalist.length; ++i){
+                                            option_temp.series[0].data[10-i-1] = data.datalist[i].value;
+                                            var str = data.datalist[i].time;
+                                            str = str.replace(/-/g,"/");
+                                            var date = new Date(str);
+                                            option_temp.xAxis[0].data[10-i-1] = date.toLocaleTimeString().replace(/^\D*/,'');
+                                            //console.log(option_temp.series[0].data);
+                                        }
+                                    }
+                                    myChart0.setOption(option_temp); 
+                                }); 
+
+                }, 5000);
+                myChart0.setOption(option_temp); 
+                myChart1.setOption(option_voltage);
+               
+            }
+
+        );
+    </script>
+</body>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js">
+    </script>
+</head>
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="height:400px"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+    <script type="text/javascript">
+        // 路径配置
+        require.config({
+            paths: {
+                echarts: 'http://echarts.baidu.com/build/dist'
+            }
+        });
+        
+        // 使用
+        require(
+            [
+                'echarts',
+                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
+            ],
+
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart = ec.init(document.getElementById('main')); 
+                
+                var option = {
+
+                    title : {
+                        text: '传感器数据',
+                        subtext: '实时显示'
+                    },
+                    tooltip : {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: ['片内温度','电压']
+                    },
+                    toolbox: {
+                        show : false,
+                        feature : {
+                            mark : {show: true},
+                            dataView : {show: true, readOnly: false},
+                            magicType : {show: true, type: 'line'},
+                            restore : {show: true},
+                            saveAsImage : {show: true}
+                        }
+                    },
+                    dataZoom : {
+                        show : true,
+                        start : 0,
+                        end : 100,
+                        showDetail : true,
+                        realtime : true
+                    },
+                    xAxis : [
+                        {
+                            type : 'category',
+                            boundaryGap : false,
+                            data : (function (){
+                                var now = new Date();
+                                var res = [];
+                                var len = 100;
+                                while (len--) {
+                                    res.unshift(now.toLocaleTimeString().replace(/^\D*/,''));
+                                    now = new Date(now - 2000);
+                                }
+                                return res;
+                            })()
+                    
+                        },
+                        {
+                            type : 'category',
+                            boundaryGap : false,
+                            data : (function (){
+                                var now = new Date();
+                                var res = [];
+                                var len = 100;
+                                while (len--) {
+                                    res.unshift(now.toLocaleTimeString().replace(/^\D*/,''));
+                                    now = new Date(now - 2000);
+                                }
+                                return res;
+                            })()
+                    
+                        }
+
+                    ],
+                    yAxis : [
+                        {
+                            type : 'value',
+                            scale: true,
+                            boundaryGap: [0.2, 0.8]
+                        }
+                    ],
+                    series : [  
+                        {
+                            name:'片内温度',
+                            type:'line',
+                            smooth:'true',
+                            data:(function (){
+                                var res = [];
+                                var len = 100;
+                                while (len--) {
+                                    res.push(5);
+                                }
+                                return res;
+                            })()
+                        },
+
+                        {
+                            name:'电压',
+                            type:'line',
+                            data:(function (){
+                                var res = [];
+                                var len = 100;
+                                while (len--) {
+                                    res.push(4);
+                                }
+                                return res;
+                            })()
+                        }
+                    ]
+                };
+                
+                window.setTimeout(function(){
+                    $.get("http://techo1987.com/rttemp/{{ mac }}/all", function(data, status){
+                        console.log(data.datalist);
+                        console.log("all data");
+                        for (var i=0; i<data.datalist.length; ++i){
+                            console.log(data.datalist[i].value);
+                            option.series[0].data.push(data.datalist[i].value);
+                            var str = data.datalist[i].time;
+                            str = str.replace(/-/g,"/");
+                            var date = new Date(str);
+                            option.xAxis[0].data.push(date.toLocaleTimeString().replace(/^\D*/,''));
+                        };
+                        myChart.setOption(option);
+                    }); 
+
+                    $.get("http://techo1987.com/rtvdd/{{ mac }}/all", function(data, status){
+                        for (var i=0; i<data.datalist.length; ++i){
+                            option.series[1].data.push(data.datalist[i].value);
+                            var str = data.datalist[i].time;
+                            str = str.replace(/-/g,"/");
+                            var date = new Date(str);
+                            option.xAxis[1].data.push(date.toLocaleTimeString().replace(/^\D*/,''));
+                        };
+                        myChart.setOption(option);
+                    });
+                }, 10);
+                // 为echarts对象加载数据 
+                myChart.setOption(option); 
+            }
+
+        );
+            
+    </script>
+</body>

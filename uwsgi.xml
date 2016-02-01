@@ -1,0 +1,8 @@
+<uwsgi>
+    <http-socket>127.0.0.1:8001</http-socket>
+    <processes>1</processes>
+    <chdir>/usr/share/nginx/citywater</chdir>
+    <wsgi-file>citywater/wsgi.py</wsgi-file>
+    <daemonize>uwsgi.log</daemonize>
+    <touch-reload>reload</touch-reload>
+</uwsgi>
